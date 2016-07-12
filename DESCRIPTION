@@ -1,0 +1,27 @@
+Package: caffeR
+Type: Package
+Title: Interface for CNN framework 'caffe'
+Version: 0.1-0
+Date: 2016-06-26
+Authors@R: c(person("Stefan", "Feuerriegel", email="stefan.feuerriegel@is.uni-freiburg.de",
+                    role=c("aut")),
+             person("Christof", "Naumzik", email="christof.naumzik@is.uni-freiburg.de",
+                    role=c("aut", "cre")))
+Author: Stefan Feuerriegel [aut],
+  Christof Naumzik [aut, cre]
+Maintainer: Christof Naumzik <christof.naumzik@is.uni-freiburg.de>
+Description: Provides an interface for the intercction with the caffe framework by BVLC
+License: MIT + file LICENSE
+URL: https://github.com/cnaumzik/caffeR
+BugReports: https://github.com/cnaumzik/caffeR/issues
+Depends:
+    R (>= 2.10)
+Imports:
+
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
+LazyData: true
+RoxygenNote: 5.0.1
+VignetteBuilder: knitr
