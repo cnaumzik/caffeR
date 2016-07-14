@@ -1,5 +1,5 @@
 #' @export
-WriteCreateLmdb <-
+writecreatelmdb <-
   function(caffedir = "~/Documents/caffe" ,
            name = "MyModel" ,
            Resize_height = NULL ,

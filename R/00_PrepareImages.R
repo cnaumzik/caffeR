@@ -1,4 +1,5 @@
-PrepareImages <-
+#' @export
+prepareimages <-
   function(
     caffedir = "~/Documents/caffe" ,
     name = "MyModel" ,
@@ -6,10 +7,12 @@ PrepareImages <-
     labels ,
     image_ids,
     suffix = NULL,
-    preprocessing = FALSE ,
+    caffe_preprocessing = FALSE ,
     padding = TRUE,
     share_val = 0.1 ,
-    seed_no = 12345678
+    seed_no = 12345678,
+    Resize_height = 227,
+    Resize_width =227
   ) {
     set.seed(seed_no)
 
@@ -47,7 +50,7 @@ PrepareImages <-
         target_file <- train_file
       }
 
-      ImagePreprocessing(file_path , target_path , preprocessing , padding , Resize_height,Resize_width)
+      imagepreprocessing(file_path , target_path , caffe_preprocessing , padding , Resize_height , Resize_width)
       write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
       print(k)
     }
