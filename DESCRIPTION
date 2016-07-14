@@ -10,7 +10,7 @@ Authors@R: c(person("Stefan", "Feuerriegel", email="stefan.feuerriegel@is.uni-fr
 Author: Stefan Feuerriegel [aut],
   Christof Naumzik [aut, cre]
 Maintainer: Christof Naumzik <christof.naumzik@is.uni-freiburg.de>
-Description: Provides an interface for the accessing 'caffe' directly from inside R. 'caffe'
+Description: Provides an interface for accessing 'caffe' directly from inside R. 'caffe'
     is a powerful deep learning framework developed by the Berkeley Vision and Learning Center
     (BVLC) that especially addresses image tasks. The package creates the necessary folder
     structure, performs preprocessing of images and invokes a call to 'caffe'.

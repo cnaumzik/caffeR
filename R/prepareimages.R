@@ -35,10 +35,10 @@ prepareimages <-
 
     validation_images <- image_ids[sample(seq(1:n), m, replace = FALSE)]
 
-    no_cores <- detectCores()
-    cl <- makeCluster(no_cores , type = "FORK")
+    #no_cores <- detectCores()
+    #cl <- makeCluster(no_cores , type = "FORK")
 
-    parSapply(cl , seq(1:n) , function(k){
+    sapply(seq(1:n) , function(k){
       file_path <- paste0(imagedir, "/", image_ids[k], suffix, ".jpg")
 
       if (length(which(image_ids[k] %in% validation_images)) > 0) {
@@ -54,8 +54,9 @@ prepareimages <-
       }
       imagepreprocessing(file_path , target_path , caffe_preprocessing , padding , Resize_height , Resize_width)
       write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
+      print(k)
     })
-    stopCluster(cl)
+    #stopCluster(cl)
 
 
   }
