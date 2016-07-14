@@ -1,6 +1,6 @@
 Package: caffeR
 Type: Package
-Title: Interface for CNN framework 'caffe'
+Title: Interface for the deep learning framework 'caffe'
 Version: 0.1-0
 Date: 2016-06-26
 Authors@R: c(person("Stefan", "Feuerriegel", email="stefan.feuerriegel@is.uni-freiburg.de",
@@ -10,19 +10,24 @@ Authors@R: c(person("Stefan", "Feuerriegel", email="stefan.feuerriegel@is.uni-fr
 Author: Stefan Feuerriegel [aut],
   Christof Naumzik [aut, cre]
 Maintainer: Christof Naumzik <christof.naumzik@is.uni-freiburg.de>
-Description: Provides an interface for the intercction with the caffe framework by BVLC
+Description: Provides an interface for the accessing 'caffe' directly from inside R. 'caffe'
+    is a powerful deep learning framework developed by the Berkeley Vision and Learning Center
+    (BVLC) that especially addresses image tasks. The package creates the necessary folder
+    structure, performs preprocessing of images and invokes a call to 'caffe'.
 License: MIT + file LICENSE
 URL: https://github.com/cnaumzik/caffeR
 BugReports: https://github.com/cnaumzik/caffeR/issues
 Depends:
     R (>= 2.10)
 Imports:
-    EBImage,
+    magrittr,
     rvest
 Suggests:
     testthat,
     knitr,
     rmarkdown
+biocViews:
+    EBImage
 LazyData: true
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
