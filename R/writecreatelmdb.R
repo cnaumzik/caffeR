@@ -43,8 +43,8 @@ writecreatelmdb <-
     new_createLmdb[44] <- "$DATA/train.txt \\"
     new_createLmdb[45] <- paste0("$EXAMPLE/", name, "_train_lmdb")
 
-    new_createLmdb[46] <- "$DATA/val.txt \\"
-    new_createLmdb[47] <- paste0("$EXAMPLE/", name, "_val_lmdb")
+    new_createLmdb[54] <- "$DATA/val.txt \\"
+    new_createLmdb[55] <- paste0("$EXAMPLE/", name, "_val_lmdb")
 
     write(new_createLmdb, target_path, append = FALSE)
   }

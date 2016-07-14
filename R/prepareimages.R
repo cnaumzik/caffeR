@@ -8,7 +8,7 @@ prepareimages <-
     image_ids,
     suffix = NULL,
     caffe_preprocessing = FALSE ,
-    padding = TRUE,
+    padding = FALSE,
     share_val = 0.1 ,
     seed_no = 12345678,
     Resize_height = 227,
@@ -18,7 +18,7 @@ prepareimages <-
 
     on.exit(closeAllConnections())
 
-    image_list <- file.list(imagedir , pattern = ".jpg")
+    image_list <- list.files(imagedir , pattern = ".jpg")
 
     n <- length(image_ids)
 
@@ -28,28 +28,28 @@ prepareimages <-
       )
     }
 
-    train_file <- paste0(caffedir, "/data", name, "/train.txt")
-    val_file <- paste0(caffedir, "/data", name, "/val.txt")
+    train_file <- paste0(caffedir, "/data/", name, "/train.txt")
+    val_file <- paste0(caffedir, "/data/", name, "/val.txt")
 
     m <- round(share_val * n)
 
     validation_images <- image_ids[sample(seq(1:n), m, replace = FALSE)]
 
-    no_cores <- detectCores() - 1
+    no_cores <- detectCores()
     cl <- makeCluster(no_cores , type = "FORK")
 
-    parApply(cl , seq(1:n) , function(k){
+    parSapply(cl , seq(1:n) , function(k){
       file_path <- paste0(imagedir, "/", image_ids[k], suffix, ".jpg")
 
-      if (which(names[k] %in% validation_images)) {
+      if (length(which(image_ids[k] %in% validation_images)) > 0) {
         target_path <-
-          paste0(caffedir, "/data", name, "/val", image_ids[k], ".jpg")
+          paste0(caffedir, "/data/", name, "/val/", image_ids[k], ".jpg")
         target_file <- val_file
 
 
       } else {
         target_path <-
-          paste0(caffedir , "/data", name , "/train" , image_ids[k] , ".jpg")
+          paste0(caffedir , "/data/", name , "/train/" , image_ids[k] , ".jpg")
         target_file <- train_file
       }
       imagepreprocessing(file_path , target_path , caffe_preprocessing , padding , Resize_height , Resize_width)

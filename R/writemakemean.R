@@ -10,7 +10,7 @@ writemakemean <-
     source_path <-
       paste0(caffedir, "/examples/imagenet/make_imagenet_mean.sh")
 
-    target_path <- paste0(caffedir, "/models/", name, "/create.sh")
+    target_path <- paste0(caffedir, "/models/", name, "/make_mean.sh")
 
     new_MakeMean <- readLines(source_path)
 

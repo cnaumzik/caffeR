@@ -19,28 +19,16 @@ imagepreprocessing<-function(
         dims <- dim(Image_read)[1:2]
         if (which.max(dims) == 1) {
           #Width ist größer
-          Image_read <-
-            Image_read %>% equalize(range = c(0, 1), levels = 256) %>% resize (w =
-                                                                                 Resize_width)
-          range <-
-            c(ceiling((
-              Resize_height - dim(Image_read)[2]
-            ) / 2), ceiling((
-              Resize_height + dim(Image_read)[2]
-            ) / 2) - 1)
-          Image_output[, range[1]:range[2], ] <- Image_read
+          Image_read <- Image_read %>% equalize(range = c(0, 1), levels = 256) %>% resize (w = Resize_width)
+          lower <- ceiling((Resize_height - dim(Image_read)[2]) / 2)
+          upper <- lower + dim(Image_read)[2]-1
+          Image_output[ , lower:upper, ] <- Image_read
 
         } else {
-          Image_read <-
-            Image_read %>% equalize(range = c(0, 1), levels = 256) %>% resize (h =
-                                                                                 Resize_height)
-          range <-
-            c(ceiling((
-              Resize_width - dim(Image_read)[1]
-            ) / 2), ceiling((
-              Resize_width + dim(Image_read)[1]
-            ) / 2) - 1)
-          Image_output[range[1]:range[2] , ,] <- Image_read
+          Image_read <- Image_read %>% equalize(range = c(0, 1), levels = 256) %>% resize (h = Resize_height)
+          lower <- ceiling((Resize_width - dim(Image_read)[1]) / 2)
+          upper <- lower + dim(Image_read)[1] - 1
+          Image_output[lower:upper , ,] <- Image_read
 
         }
       } else {
