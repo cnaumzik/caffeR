@@ -3,4 +3,3 @@
 export(WriteCreateLmdb)
 export(WriteMakeMean)
 export(brewNN)
-export(hello)
