@@ -20,7 +20,7 @@ writecreatelmdb <-
 
     new_createLmdb[6] <- paste0("DATA=", caffedir, "/data/", name)
 
-    new_createLmdb[7] <- paste0("Tools=", caffedir, "/build/tools")
+    new_createLmdb[7] <- paste0("TOOLS=", caffedir, "/build/tools")
 
     new_createLmdb[9] <-
       paste0("TRAIN_DATA_ROOT=", caffedir, "/data/", name, "/train/")

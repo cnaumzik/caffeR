@@ -18,7 +18,7 @@ writemakemean <-
 
     new_MakeMean[6] <- paste0("DATA=", caffedir, "/data/", name)
 
-    new_MakeMean[7] <- paste0("Tools=", caffedir, "/build/tools")
+    new_MakeMean[7] <- paste0("TOOLS=", caffedir, "/build/tools")
 
     new_MakeMean[9] <-
       paste0("$TOOLS/compute_image_mean -backend=lmdb $EXAMPLE/",
