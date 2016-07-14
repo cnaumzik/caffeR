@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 
 # caffeR: a wrapper to 'caffe'
 
-[![Build Status](https://travis-ci.org/cnaumzik/caffeR?branch=master)](https://travis-ci.org/cnaumzik/caffeR)
+[![Build Status](https://travis-ci.org/cnaumzik/caffeR.svg?branch=master)](https://travis-ci.org/cnaumzik/caffeR)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/caffeR)](https://cran.r-project.org/package=caffeR)
 [![Coverage Status](https://img.shields.io/codecov/c/github/cnaumzik/caffeR/master.svg)](https://codecov.io/github/cnaumzik/caffeR?branch=master)
 
