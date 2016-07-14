@@ -1,4 +1,4 @@
-ImagePreprocessing(
+ImagePreprocessing<-function(
   file_path ,
   target_path ,
   preprocessing = FALSE ,
