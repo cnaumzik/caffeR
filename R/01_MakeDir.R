@@ -1,4 +1,5 @@
-MakeDir <- function(caffedir = "~/Documents/caffe" , name = "MyModel") {
+#' @export
+makedir <- function(caffedir = "~/Documents/caffe" , name = "MyModel") {
   #Remove all folders which might be existing from previous operations with the same name
 
   remove <- "sudo rm -r -f "

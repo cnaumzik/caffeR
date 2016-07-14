@@ -1,7 +1,8 @@
-ImagePreprocessing<-function(
+#'@export
+imagepreprocessing<-function(
   file_path ,
   target_path ,
-  preprocessing = FALSE ,
+  caffe_preprocessing = FALSE ,
   padding = FALSE ,
   Resize_height = 227,
   Resize_width = 227
@@ -10,9 +11,10 @@ ImagePreprocessing<-function(
     Image(array(0, dim = c(Resize_width, Resize_height, 3)), colormode = "color")
 
   if (file.exists(file_path)) {
+
     Image_read <- readImage(file_path, type = "jpg", all = FALSE)
 
-    if (preprocessing) {
+    if (!caffe_preprocessing) {
       if (padding) {
         dims <- dim(Image_read)[1:2]
         if (which.max(dims) == 1) {
@@ -41,12 +43,14 @@ ImagePreprocessing<-function(
           Image_output[range[1]:range[2] , ,] <- Image_read
 
         }
-
       } else {
         Image_output <-
           Image_read %>% equalize(range = c(0, 1), levels = 256) %>% resize (w =
                                                                                Resize_width , h = Resize_height)
       }
+    } else {
+      Image_output <- Image_read
+
     }
   }
   writeImage(Image_output , target_path)
