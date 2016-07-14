@@ -22,7 +22,8 @@ Depends:
 Imports:
     magrittr,
     rvest,
-    parallel
+    parallel,
+    RProtoBuf
 Suggests:
     testthat,
     knitr,
