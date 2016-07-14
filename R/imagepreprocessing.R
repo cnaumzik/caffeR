@@ -18,7 +18,6 @@ imagepreprocessing<-function(
       if (padding) {
         dims <- dim(Image_read)[1:2]
         if (which.max(dims) == 1) {
-          #Width ist größer
           Image_read <- Image_read %>% equalize(range = c(0, 1), levels = 256) %>% resize (w = Resize_width)
           lower <- ceiling((Resize_height - dim(Image_read)[2]) / 2)
           upper <- lower + dim(Image_read)[2]-1
