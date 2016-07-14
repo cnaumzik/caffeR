@@ -3,7 +3,7 @@ prepareimages <-
   function(
     caffedir = "~/Documents/caffe" ,
     name = "MyModel" ,
-    imagedir = "~/Documents/data" ,
+    imagedir = "~/Documents/main" ,
     labels ,
     image_ids,
     suffix = NULL,
