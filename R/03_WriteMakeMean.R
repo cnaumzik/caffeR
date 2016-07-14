@@ -21,14 +21,14 @@ WriteMakeMean <-
     new_MakeMean[7] <- paste0("Tools=", caffedir, "/build/tools")
 
     new_MakeMean[9] <-
-      paste0("$TOOLS/compute_image_mean $EXAMPLE/",
+      paste0("$TOOLS/compute_image_mean -backend=lmdb $EXAMPLE/",
              name,
              "_train_lmdb \\")
 
     new_MakeMean[10] <- paste0("$DATA/", name, "_train_mean.binaryproto")
 
     new_MakeMean[12] <-
-      paste0("$TOOLS/compute_image_mean $EXAMPLE/", name, "_val_lmdb \\")
+      paste0("$TOOLS/compute_image_mean -backend=lmdb $EXAMPLE/", name, "_val_lmdb \\")
 
     new_MakeMean[13] <- paste0("$DATA/", name, "_val_mean.binaryproto")
 
