@@ -1,5 +1,5 @@
 PrepareImages <-
-  funtion(
+  function(
     caffedir = "~/Documents/caffe" ,
     name = "MyModel" ,
     imagedir = "~/Documents/data" ,
