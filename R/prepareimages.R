@@ -38,7 +38,7 @@ prepareimages <-
     no_cores <- detectCores() - 1
     cl <- makeCluster(no_cores , type = "FORK")
 
-    parApply(cl , seq(1:n) , funktion(k) {
+    parApply(cl , seq(1:n) , function(k){
       file_path <- paste0(imagedir, "/", image_ids[k], suffix, ".jpg")
 
       if (which(names[k] %in% validation_images)) {
@@ -52,7 +52,6 @@ prepareimages <-
           paste0(caffedir , "/data", name , "/train" , image_ids[k] , ".jpg")
         target_file <- train_file
       }
-
       imagepreprocessing(file_path , target_path , caffe_preprocessing , padding , Resize_height , Resize_width)
       write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
     })
