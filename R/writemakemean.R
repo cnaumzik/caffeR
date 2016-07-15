@@ -1,6 +1,5 @@
 #' @export
-writemakemean <-
-  function(caffedir = "~/Documents/caffe" , name = "MyModel") {
+writeMakeMean <- function(name = "MyModel", caffedir = "~/Documents/caffe") {
     #This function assumes that you have downloaded the imagent example from TODO and that the function
     #make_imagenet_mean.sh is stored in /path/to/caffe/examples/imagenet
     #Do not set resize parameter if you use TODO to preprocess the images
