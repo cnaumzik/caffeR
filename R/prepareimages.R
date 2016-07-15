@@ -4,17 +4,24 @@ prepareimages <-
     caffedir = "~/Documents/caffe" ,
     name = "MyModel" ,
     imagedir = "~/Documents/main" ,
-    labels ,
-    image_ids,
+    labels = NULL ,
+    image_ids = NULL,
     suffix = NULL,
     caffe_preprocessing = FALSE ,
     padding = FALSE,
     share_val = 0.1 ,
-    seed_no = 12345678,
+    seed = 0,
     Resize_height = 227,
     Resize_width =227
   ) {
-    set.seed(seed_no)
+
+    if(isnull(image_ids)){
+      stop ("The image ids are required.")
+    }
+    if(isnull(labels)){
+      stop ("The labels are required.")
+    }
+    set.seed(seed)
 
     on.exit(closeAllConnections())
 
@@ -35,9 +42,6 @@ prepareimages <-
 
     validation_images <- image_ids[sample(seq(1:n), m, replace = FALSE)]
 
-    #no_cores <- detectCores()
-    #cl <- makeCluster(no_cores , type = "FORK")
-
     sapply(seq(1:n) , function(k){
       file_path <- paste0(imagedir, "/", image_ids[k], suffix, ".jpg")
 
@@ -56,7 +60,6 @@ prepareimages <-
       write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
       print(k)
     })
-    #stopCluster(cl)
-
+}
 
 
