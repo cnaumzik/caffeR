@@ -12,27 +12,36 @@ writeMakeMean <- function(name = "MyModel", caffedir = "~/Documents/caffe") {
     target_path <- paste0(caffedir, "/models/", name, "/make_mean.sh")
 
     new_MakeMean <- readLines(source_path)
+    fileMakeMean <- readLines(source_path)
 
     new_MakeMean[5] <- paste0("EXAMPLE=", caffedir, "/examples/", name)
+    fileMakeMean[5] <- paste0("EXAMPLE=", caffedir, "/examples/", name)
 
     new_MakeMean[6] <- paste0("DATA=", caffedir, "/data/", name)
+    fileMakeMean[6] <- paste0("DATA=", caffedir, "/data/", name)
 
     new_MakeMean[7] <- paste0("TOOLS=", caffedir, "/build/tools")
+    fileMakeMean[7] <- paste0("TOOLS=", caffedir, "/build/tools")
 
     new_MakeMean[9] <-
+    fileMakeMean[9] <-
       paste0("$TOOLS/compute_image_mean -backend=lmdb $EXAMPLE/",
              name,
              "_train_lmdb \\")
 
     new_MakeMean[10] <- paste0("$DATA/", name, "_train_mean.binaryproto")
+    fileMakeMean[10] <- paste0("$DATA/", name, "_train_mean.binaryproto")
 
     new_MakeMean[12] <-
+    fileMakeMean[12] <-
       paste0("$TOOLS/compute_image_mean -backend=lmdb $EXAMPLE/", name, "_val_lmdb \\")
 
     new_MakeMean[13] <- paste0("$DATA/", name, "_val_mean.binaryproto")
+    fileMakeMean[13] <- paste0("$DATA/", name, "_val_mean.binaryproto")
 
 
     write(new_MakeMean, target_path, append = FALSE)
+    write(fileMakeMean, target_path, append = FALSE)
     write("", target_path, append = TRUE)
     write("echo \"Done.\" ", target_path, append = TRUE)
   }
