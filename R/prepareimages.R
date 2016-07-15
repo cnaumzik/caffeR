@@ -59,5 +59,4 @@ prepareimages <-
     #stopCluster(cl)
 
 
-  }
 
