@@ -15,7 +15,7 @@ prepareImages <- function(name = "MyModel",
     stop("Argument 'image_ids' cannot be NULL.")
   }
 
-  set.seed(0)
+  set.seed(seed)
 
   # TODO: comment what this is about
   on.exit(closeAllConnections())

@@ -52,7 +52,6 @@ preprocessImages <- function(input_path = NULL, output_path = NULL,
     }
   } else {
     image_output <- image_read
-
   }
 
   writeImage(image_output , output_path)
