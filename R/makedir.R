@@ -1,7 +1,8 @@
 #' @export
-makedir <- function(caffedir = "~/Documents/caffe" , name = "MyModel") {
+makeDir <- function(caffedir = "~/Documents/caffe" , name = "MyModel") {
   #Remove all folders which might be existing from previous operations with the same name
 
+  # TODO: check .Platform$OS.type == "unix
   remove <- "sudo rm -r -f "
   create <- "sudo mkdir "
   examples_dir <- paste0(caffedir, "/examples/", name)
