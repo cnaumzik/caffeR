@@ -15,7 +15,6 @@ writecreatelmdb <-
       paste0(caffedir, "/examples/imagenet/create_imagenet.sh")
     target_path <- paste0(caffedir, "/models/", name, "/create.sh")
 
-    new_createLmdb <- readLines(source_path)
 
     new_createLmdb[5] <- paste0("EXAMPLE=", caffedir, "/examples/", name)
 
