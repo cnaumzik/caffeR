@@ -2,8 +2,9 @@
 writecreatelmdb <-
   function(caffedir = "~/Documents/caffe" ,
            name = "MyModel" ,
-           Resize_height = NULL ,
-           Resize_width = NULL) {
+           caffe_preprocessing = FALSE ,
+           Resize_height = 227 ,
+           Resize_width = 227) {
     #This function assumes that you have downloaded the imagent example from TODO and that the function
     #create_imagenet.sh is stored in /path/to/caffe/examples/imagenet
     #Do not set resize parameter if you use TODO to preprocess the images
@@ -28,7 +29,7 @@ writecreatelmdb <-
     new_createLmdb[10] <-
       paste0("VAL_DATA_ROOT=", caffedir, "/data/", name, "/val/")
 
-    if (is.null(Resize_height) || is.null(Resize_width)) {
+    if (!caffe_preprocessing) {
       new_createLmdb[14] <- "RESIZE=false"
 
 
