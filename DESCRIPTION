@@ -1,15 +1,8 @@
 Package: caffeR
 Type: Package
 Title: Interface for the deep learning framework 'caffe'
-Version: 0.1-0
 Version: 0.2-0
 Date: 2016-06-26
-Authors@R: c(person("Stefan", "Feuerriegel", email="stefan.feuerriegel@is.uni-freiburg.de",
-                    role=c("aut")),
-             person("Christof", "Naumzik", email="christof.naumzik@is.uni-freiburg.de",
-                    role=c("aut", "cre")))
-Author: Stefan Feuerriegel [aut],
-  Christof Naumzik [aut, cre]
 Authors@R: c(person("Christof", "Naumzik", email="christof.naumzik@is.uni-freiburg.de",
                     role=c("aut", "cre")),
              person("Stefan", "Feuerriegel", email="stefan.feuerriegel@is.uni-freiburg.de",
