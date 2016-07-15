@@ -33,8 +33,7 @@ prepareImages <- function(name = "MyModel",
 
   m <- round(share_val * n)
 
-  validation_images <-
-    image_ids[sample(seq(1:n), m, replace = FALSE)]
+  validation_images <- image_ids[sample(seq(1:n), m, replace = FALSE)]
 
   #no_cores <- detectCores()
   #cl <- makeCluster(no_cores , type = "FORK")
@@ -49,16 +48,15 @@ prepareImages <- function(name = "MyModel",
 
 
     } else {
-      target_path <-
-        paste0(caffedir , "/data/", name , "/train/" , image_ids[k] , ".jpg")
+      target_path <- paste0(caffedir , "/data/", name , "/train/" , image_ids[k] , ".jpg")
       target_file <- train_file
     }
-    imagepreprocessing(file_path ,
-                       target_path ,
-                       caffe_preprocessing ,
-                       padding ,
-                       Resize_height ,
-                       Resize_width)
+    preprocessImages(file_path ,
+                     target_path ,
+                     caffe_preprocessing ,
+                     padding ,
+                     resize_height ,
+                     resize_width)
     write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
     print(k)
   })
