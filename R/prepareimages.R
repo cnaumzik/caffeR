@@ -7,7 +7,7 @@ prepareImages <- function(name = "MyModel",
                           padding = FALSE,
                           share_val = 0.1,
                           seed = 0,
-                          resize__height = 227, resize__width = 227) {
+                          resize_height = 227, resize_width = 227) {
   if (is.null(labels)) {
     stop("Argument 'labels' cannot be NULL.")
   }
@@ -25,9 +25,7 @@ prepareImages <- function(name = "MyModel",
   n <- length(image_ids)
 
   if (length(image_list) == 0) {
-    stop(
-      "There are no \".jpg\" files in the directory. Please check if you provided the correct path."
-    )
+    stop("There are no '.jpg' files in the directory. Please check if you provided the correct path.")
   }
 
   train_file <- paste0(caffedir, "/data/", name, "/train.txt")
