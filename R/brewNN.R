@@ -14,7 +14,7 @@ prepareNN <-
            share_val = 0.1,
            architecture = "bvlc_reference_caffenet" ,
            parameters = FALSE ,
-           seed_no = 12345678) {
+           seed = 0) {
 
 
 #Construct required folders in caffedir/data, caffedir/examples and caffedir/models
@@ -42,7 +42,7 @@ prepareimages(
   caffe_preprocessing ,
   padding ,
   share_val,
-  seed_no,
+  seed,
   Resize_height,
   Resize_width)
 
