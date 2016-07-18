@@ -8,18 +8,18 @@ writeCreateLmdb <- function(caffedir = "~/Documents/caffe", name = "MyModel",
 
     on.exit(closeAllConnections())
 
-    script <- generateCreateLmdb(caffedir, resize_width, resize_height, caffe_preprocessing)
+    script <- generateCreateLmdb(caffedir, name, caffe_preprocessing, resize_height, resize_width)
 
     output_path <- paste0(caffedir, "/models/", name, "/create.sh")
 
-    write(new_createLmdb, output_path, append = FALSE)
+    writeLines(script, con = output_path)
 }
 
-generateCreateLmdb <- function(caffedir, resize_width, resize_height, caffe_preprocessing) {
-  script <- system.file("extdata", "create_imagenet.sh", package="caffeR")
+generateCreateLmdb <- function(caffedir, name, caffe_preprocessing, resize_height, resize_width) {
+  script <- readLines(system.file("extdata", "create_imagenet.sh", package = "caffeR"))
 
   script <- gsub("__CAFFEDIR__", caffedir, script)
-  script <- gsub("__NAME__", caffedir, script)
+  script <- gsub("__NAME__", name, script)
   script <- gsub("__RESIZE_HEIGHT__", resize_width, script)
   script <- gsub("__RESIZE_WIDTH__", resize_height, script)
   script <- gsub("__RESIZE_FLAG__", caffe_preprocessing, script)
