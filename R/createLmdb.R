@@ -1,5 +1,5 @@
 #' @export
-writecreatelmdb <- function(caffedir = "~/Documents/caffe", name = "MyModel",
+writeCreateLmdb <- function(caffedir = "~/Documents/caffe", name = "MyModel",
                             caffe_preprocessing = FALSE,
                             resize_height = 227, resize_width = 227) {
     #This function assumes that you have downloaded the imagent example from TODO and that the function
