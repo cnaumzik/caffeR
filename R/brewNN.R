@@ -1,5 +1,4 @@
 #' @export
-#'
 prepareNN <-
   function(caffedir = "~/Documents/caffe" ,
            name = "Catsvsdogs" ,
