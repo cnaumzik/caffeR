@@ -15,10 +15,10 @@ prepareimages <-
     Resize_width =227
   ) {
 
-    if(isnull(image_ids)){
+    if(is.null(image_ids)){
       stop ("The image ids are required.")
     }
-    if(isnull(labels)){
+    if(is.null(labels)){
       stop ("The labels are required.")
     }
     set.seed(seed)
