@@ -19,7 +19,7 @@ setsolver <-
            solver_mode = "CPU",
            solver_type = "SGD",
            clip_gradients = -1) {
-    readProtoFiles(paste0(caffedir,"/src/caffe/proto/caffe.proto"))
+    RProtoBuf::readProtoFiles(paste0(caffedir,"/src/caffe/proto/caffe.proto"))
 
     solver_message <- RProtoBuf::new(caffe.SolverParameter)
 
