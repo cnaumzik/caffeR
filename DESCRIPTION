@@ -28,7 +28,8 @@ Imports:
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    BiocInstaller
 biocViews:
     EBImage
 LazyData: true
