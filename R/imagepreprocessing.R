@@ -1,3 +1,4 @@
+#'@export
 padImage <- function(image, dim, resize_width, resize_height) {
   image_output <- Image(array(0, dim = c(resize_width, resize_height, 3)), colormode = "color")
 
