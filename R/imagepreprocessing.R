@@ -1,9 +1,9 @@
-#'@export
+#' @export
 padImage <- function(image, dim, resize_width, resize_height) {
-  image_output <- Image(array(0, dim = c(resize_width, resize_height, 3)), colormode = "color")
+  image_output <- EBImage::Image(array(0, dim = c(resize_width, resize_height, 3)), colormode = "color")
 
   image <- image %>%
-    equalize(range = c(0, 1), levels = 256)
+    EBImage::equalize(range = c(0, 1), levels = 256)
 
   other_dim <- ifelse(dim == 1, 2, 1)
 
@@ -48,7 +48,7 @@ preprocessImages <- function(input_path = NULL, output_path = NULL,
       image_output <- padImage(image_read, which.max(dim(image_read)[1:2]))
     } else {
       image_output <- image_read %>%
-        equalize(range = c(0, 1), levels = 256) %>%
+        EBImage::equalize(range = c(0, 1), levels = 256) %>%
         resize (w = resize_width , h = resize_height)
     }
   } else {
