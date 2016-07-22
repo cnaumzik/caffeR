@@ -23,7 +23,8 @@ Imports:
     magrittr,
     rvest,
     parallel,
-    RProtoBuf
+    RProtoBuf,
+    EBImage
 Suggests:
     testthat,
     knitr,
