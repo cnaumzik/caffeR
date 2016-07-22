@@ -2,9 +2,11 @@
 
 export(adjustNetwork)
 export(makeDir)
+export(padImage)
 export(prepareNN)
 export(prepareimages)
 export(preprocessImages)
 export(setsolver)
 export(writeCreateLmdb)
 export(writeMakeMean)
+export(writeTrainScript)

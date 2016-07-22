@@ -17,24 +17,24 @@ prepareNN <-
 
 
 #Construct required folders in caffedir/data, caffedir/examples and caffedir/models
-makedir(caffedir , name)
+makeDir(caffedir , name)
 
 #Construct create.sh responsible for creating lmdb for images
-writecreatelmdb(caffedir ,
+writeCreateLmdb(caffedir ,
                 name ,
                 caffe_preprocessing ,
                 Resize_height ,
                 Resize_width)
 
 #Construct make_mean.sh responsible for creating the mean of the images in the data set
-writemakemean(caffedir , name)
+writeMakeMean(caffedir , name)
 
 #Split image set into training and validation set and prepares
 #corresponding .txt files for creation of lmdb files via caffe routines
 prepareimages(
   caffedir ,
   name ,
-  imagedir ,
+  image_dir ,
   labels ,
   image_ids ,
   suffix ,

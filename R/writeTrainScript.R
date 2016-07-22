@@ -11,7 +11,7 @@ writeTrainScript <- function (caffedir = "~/Documents/caffe" , name = "My_Model"
 
 }
 
-generateTrainScript(caffedir = "~/Documents/caffe" , name = "My_Model" , network_name = "bvlc_reference_caffenet"){
+generateTrainScript <- function(caffedir = "~/Documents/caffe" , name = "My_Model" , network_name = "bvlc_reference_caffenet"){
   script <- readLines(system.file("extdata", "train_network.sh", package = "caffeR"))
   script <- gsub("__CAFFEDIR__", caffedir, script)
   script <- gsub("__NAME__", name, script)

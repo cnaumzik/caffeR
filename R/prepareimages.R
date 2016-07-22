@@ -56,7 +56,7 @@ prepareimages <-
           paste0(caffedir , "/data/", name , "/train/" , image_ids[k] , ".jpg")
         target_file <- train_file
       }
-      imagepreprocessing(file_path , target_path , caffe_preprocessing , padding , Resize_height , Resize_width)
+      preprocessImages(file_path , target_path , caffe_preprocessing , padding , Resize_height , Resize_width)
       write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
       print(k)
     })
