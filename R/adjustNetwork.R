@@ -6,7 +6,8 @@ adjustNetwork <-
            no_new_layers = 1 ,
            freeze_all = TRUE ,
            lr = NULL,
-           num_output = 2) {
+           num_output = 2,
+           loss = "EuclideanLoss") {
     #source_path <- paste0(caffedir,"/models/",network_name,"/train_val.prototxt")
 
     #target_path <- paste0(caffedir,"/models/",name,"/train_val.prototxt")
@@ -59,10 +60,10 @@ adjustNetwork <-
                     name ,
                     vision_lr[k] ,
                     new_layer[k] ,
-                    new_bottom[k])
+                    new_bottom[k],
+                    loss)
 
-      #writeLines(current_layer)
-      #writeLines(file[layer_indx[k]:(layer_indx[k+1]-1)])
+
       file[layer_indx[k]:(layer_indx[k + 1] - 1)] <- current_layer
     }
     # Adjusting # output in final layer (manual workarounf until additional functions are included)
@@ -138,8 +139,9 @@ adjustLayer <-
            caffedir = "~/Documents/caffe",
            name = "My_model",
            vision_lr = 1 ,
-           new_layer ,
-           new_bottom) {
+           new_layer = FALSE,
+           new_bottom = FALSE,
+           loss = "EuclideanLoss") {
     indx <- grep("type", layer)
 
     if (is.null(layer)) {
@@ -151,7 +153,7 @@ adjustLayer <-
 
     } else if (length(grep("loss" , layer[indx] , ignore.case = TRUE)) > 0 ||
                length(grep("accuracy" , layer[indx] , ignore.case = TRUE)) > 0) {
-      layer <- adjustLossLayer(layer, name , new_bottom)
+      layer <- adjustLossLayer(layer, name , new_bottom , loss)
 
     } else if (length(grep("Convolution" , layer[indx])) > 0 ||
                length(grep("Pooling" , layer[indx])) > 0 ||
@@ -236,21 +238,33 @@ adjustLossLayer <-
            name = "My_model" ,
            new_bottom = TRUE ,
            loss = "EuclideanLoss") {
+
     if (is.null(layer)) {
-      stop("No loss layer provided")
+      stop("No loss/accuracy layer provided")
     }
-    if (length(grep("loss", layer)) > 0) {
+    if(loss == "EuclideanLoss") {
+
       layer[grep("type", layer)] <- paste0("type: \"", loss, "\"")
+      layer[grep("name", layer)] <- paste0("name: \"loss\"")
+      layer[grep("top", layer)] <- paste0("top: \"loss\"")
+
+    } else {
+
+      if (length(grep("loss", layer)) > 0) {
+
+        layer[grep("type", layer)] <- paste0("type: \"", loss, "\"")
+      }
+
+      if (new_bottom) {
+
+        bottom_indx <- grep("bottom" , layer)
+
+        change_indx <- switch(grep("label" , layer[bottom_indx]), 2, 1)
+
+        layer[bottom_indx[change_indx]] <-
+          changeLayerName(layer[bottom_indx[change_indx]])
+
     }
-
-    if (new_bottom) {
-      bottom_indx <- grep("bottom" , layer)
-
-      change_indx <- switch(grep("label" , layer[bottom_indx]), 2, 1)
-
-      layer[bottom_indx[change_indx]] <-
-        changeLayerName(layer[bottom_indx[change_indx]])
-
     }
     return(layer)
   }
