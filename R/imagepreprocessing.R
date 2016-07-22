@@ -31,10 +31,10 @@ preprocessImages <- function(input_path = NULL, output_path = NULL,
                              caffe_preprocessing = FALSE,
                              padding = FALSE,
                              resize_height = 227, resize_width = 227) {
-  if (is.null(input_path) || !dir.exists(input_path)) {
+  if (is.null(input_path) || !file.exists(input_path)) {
     stop("Argument 'input_path' is NULL but must specify a folder destination.")
   }
-  if (is.null(output_path) || !dir.exists(output_path)) {
+  if (is.null(output_path) ) {
     stop("Argument 'output_path' is NULL but must specify a folder destination.")
   }
   if (input_path == output_path) {
