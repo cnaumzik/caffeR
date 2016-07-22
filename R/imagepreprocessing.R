@@ -9,14 +9,14 @@ padImage <- function(image, dim, resize_width, resize_height) {
 
   if (dim == 1) {
     image <- image %>%
-      resize(h = resize_height)
+      EBImage::resize(h = resize_height)
 
     lower <- ceiling((resize_height - dim(image)[other_dim]) / 2)
     upper <- lower + dim(image)[other_dim] - 1
     image_output[ , lower:upper, ] <- image
   } else {
     image <- image %>%
-      resize(w = resize_width)
+      EBImage::resize(w = resize_width)
 
     lower <- ceiling((resize_width - dim(image)[other_dim]) / 2)
     upper <- lower + dim(image)[other_dim] - 1
@@ -41,7 +41,7 @@ preprocessImages <- function(input_path = NULL, output_path = NULL,
     stop("Arguments of 'input_path' and 'output_path' must specify different locations.")
   }
 
-  image_read <- readImage(input_path, type = "jpg", all = FALSE)
+  image_read <- EBImage::readImage(input_path, type = "jpg", all = FALSE)
 
   if (!caffe_preprocessing) {
     if (padding) {
@@ -49,11 +49,11 @@ preprocessImages <- function(input_path = NULL, output_path = NULL,
     } else {
       image_output <- image_read %>%
         EBImage::equalize(range = c(0, 1), levels = 256) %>%
-        resize (w = resize_width , h = resize_height)
+        EBImage::resize (w = resize_width , h = resize_height)
     }
   } else {
     image_output <- image_read
   }
 
-  writeImage(image_output , output_path)
+  EBImage::writeImage(image_output , output_path)
 }
