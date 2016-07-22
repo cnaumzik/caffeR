@@ -24,12 +24,12 @@ Imports:
     rvest,
     parallel,
     RProtoBuf,
-    EBImage
+    EBImage,
+    BiocInstaller
 Suggests:
     testthat,
     knitr,
-    rmarkdown,
-    BiocInstaller
+    rmarkdown
 biocViews:
     EBImage
 LazyData: true
