@@ -3,6 +3,8 @@
 language: R
 sudo: false
 cache: packages
+r: 3.3.0
+warnings_are_errors: false
 
 r_packages:
   - covr

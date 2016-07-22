@@ -24,7 +24,8 @@ Imports:
     rvest,
     parallel,
     RProtoBuf,
-    EBImage
+    EBImage,
+    BiocInstaller
 Suggests:
     testthat,
     knitr,
