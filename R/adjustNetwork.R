@@ -8,12 +8,9 @@ adjustNetwork <-
            lr = NULL,
            num_output = 2,
            loss = "EuclideanLoss") {
-    #source_path <- paste0(caffedir,"/models/",network_name,"/train_val.prototxt")
+    source_path <- paste0(caffedir,"/models/",network_name,"/train_val.prototxt")
 
-    #target_path <- paste0(caffedir,"/models/",name,"/train_val.prototxt")
-
-    source_path <- "~/Promotion/train_val.prototxt"
-    target_path <- "~/Promotion/train_val_new.txt"
+    target_path <- paste0(caffedir,"/models/",name,"/train_val.prototxt")
 
     #system(paste0("sudo cp " , source_path , target_path))
 
