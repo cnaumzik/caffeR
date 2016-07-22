@@ -1,5 +1,5 @@
 #' @export
-prepareimages <-
+prepareImages <-
   function(
     caffedir = "~/Documents/caffe" ,
     name = "MyModel" ,

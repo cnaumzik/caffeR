@@ -31,7 +31,7 @@ writeMakeMean(caffedir , name)
 
 #Split image set into training and validation set and prepares
 #corresponding .txt files for creation of lmdb files via caffe routines
-prepareimages(
+prepareImages(
   caffedir ,
   name ,
   image_dir ,
