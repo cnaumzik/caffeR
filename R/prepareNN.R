@@ -47,8 +47,8 @@ prepareImages(
 
 #Execute shell commands to create lmdb and mean.binaryproto files
 
-system(paste0("sudo ", caffedir , "/models/", name , "/create.sh"))
-system(paste0("sudo ", caffedir , "/models/", name , "/make_mean.sh"))
+system(paste0("sudo sh ", caffedir , "/models/", name , "/create.sh"))
+system(paste0("sudo  sh ", caffedir , "/models/", name , "/make_mean.sh"))
 
 #Create solver.prototxt - If parameters == FALSE default setting is chosen
 
