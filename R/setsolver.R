@@ -24,7 +24,7 @@ setsolver <-
     output_path <- paste0(caffedir,"/models/",name,"/solver.prototxt")
     solver_message <- RProtoBuf::new(caffe.SolverParameter)
 
-    solver_message[[1]] <- paste0(caffedir, "/models/", name, "/", net)
+    solver_message[[24]] <- paste0(caffedir, "/models/", name, "/", net)
     solver_message[[3]] <- test_iter
     solver_message[[4]] <- test_interval
     solver_message[[5]] <- base_lr

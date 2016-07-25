@@ -22,7 +22,11 @@ generateCreateLmdb <- function(caffedir, name, caffe_preprocessing, resize_heigh
   script <- gsub("__NAME__", name, script)
   script <- gsub("__RESIZE_HEIGHT__", resize_width, script)
   script <- gsub("__RESIZE_WIDTH__", resize_height, script)
-  script <- gsub("__RESIZE_FLAG__", caffe_preprocessing, script)
 
+  if(caffe_preprocessing) {
+    script <- gsub("__RESIZE_FLAG__", "true", script)
+  } else {
+    script <- gsub("__RESIZE_FLAG__", "false", script)
+  }
   return(script)
 }
