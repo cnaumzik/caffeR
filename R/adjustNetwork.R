@@ -242,7 +242,7 @@ adjustLossLayer <-
     if(loss == "EuclideanLoss") {
 
       layer[grep("type", layer)] <- paste0("type: \"", loss, "\"")
-      layer[grep("name", layer)] <- paste0("name: \"loss\"")
+      #layer[grep("name", layer)] <- paste0("name: \"loss\"")
       layer[grep("top", layer)] <- paste0("top: \"loss\"")
 
     } else {

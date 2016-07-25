@@ -48,24 +48,22 @@ prepareImages <-
 
 
       if (length(which(image_ids[k] %in% validation_images)) > 0) {
-        #target_path <-
-         # paste0(caffedir, "/data/", name, "/val/", image_ids[k], ".jpg")
-        #target_file <- val_file
-          target_path <- paste0("~/Promotion/Research/Code/Data/Catsvsdogs/val/",image_ids[k],".jpg")
-          target_file <- "~/Promotion/Research/Code/Data/Catsvsdogs/val.txt"
+        target_path <-
+         paste0(caffedir, "/data/", name, "/val/", image_ids[k], ".jpg")
+        target_file <- val_file
 
 
       } else {
-        #target_path <-
-         # paste0(caffedir , "/data/", name , "/train/" , image_ids[k] , ".jpg")
-        #target_file <- train_file
-        target_path <- paste0("~/Promotion/Research/Code/Data/Catsvsdogs/train/",image_ids[k],".jpg")
-        target_file <- "~/Promotion/Research/Code/Data/Catsvsdogs/train.txt"
+        target_path <-
+         paste0(caffedir , "/data/", name , "/train/" , image_ids[k] , ".jpg")
+        target_file <- train_file
+
       }
 
       preprocessImages(input_path = file_path , output_path = target_path , caffe_preprocessing , padding , Resize_height , Resize_width)
       write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
     })
+
 }
 
 
