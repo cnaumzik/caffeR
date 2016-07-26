@@ -12,7 +12,8 @@ prepareImages <-
     share_val = 0.1 ,
     seed = 0,
     Resize_height = 227,
-    Resize_width =227
+    Resize_width =227,
+    backend = "HDF5"
   ) {
 
     if(is.null(image_ids)){
@@ -43,25 +44,28 @@ prepareImages <-
     validation_images <- image_ids[sample(seq(1:n), m, replace = FALSE)]
 
     sapply(seq(1:n) , function(k){
-
-      file_path <- paste0(imagedir, "/", image_ids[k], suffix, ".jpg")
-
-
-      if (length(which(image_ids[k] %in% validation_images)) > 0) {
-        target_path <-
-         paste0(caffedir, "/data/", name, "/val/", image_ids[k], ".jpg")
-        target_file <- val_file
+      if(backend == "lmdb"){
+        file_path <- paste0(imagedir, "/", image_ids[k], suffix, ".jpg")
 
 
+        if (length(which(image_ids[k] %in% validation_images)) > 0) {
+          target_path <-
+          paste0(caffedir, "/data/", name, "/val/", image_ids[k], ".jpg")
+          target_file <- val_file
+
+
+        } else {
+          target_path <-
+          paste0(caffedir , "/data/", name , "/train/" , image_ids[k] , ".jpg")
+          target_file <- train_file
+
+        }
+
+        preprocessImages(input_path = file_path , output_path = target_path , caffe_preprocessing , padding , Resize_height , Resize_width)
+        write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
       } else {
-        target_path <-
-         paste0(caffedir , "/data/", name , "/train/" , image_ids[k] , ".jpg")
-        target_file <- train_file
-
+        
       }
-
-      preprocessImages(input_path = file_path , output_path = target_path , caffe_preprocessing , padding , Resize_height , Resize_width)
-      write(paste0(image_ids[k], ".jpg ", labels[k]) , target_file , append = TRUE)
     })
 
 }
