@@ -11,6 +11,8 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
                         resize_width =227,
                         batch_size = 64){
   
+  #TODO add meansubstraction
+  
   if(is.null(image_ids)){
     stop ("The image ids are required.")
   }
@@ -29,8 +31,9 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
   }
   data_batch <- array(0, dim = c(batch_size,3,resize_width,resize_height))
   label_batch <- array(0, dim = c(batch_size,1))
-  rhdf5::h5createDataset(file_name , "data", c(n,3,resize_width,resize_height), storage.mode = "double", showWarnings = FALSE,level=9 ,chunk = c(batch_size,3,resize_width,resize_height))
-  rhdf5::h5createDataset(file_name , "label", c(n,1), storage.mode = "double", showWarnings = FALSE,level = 9, chunk =c(batch_size,1))
+  #HDF5 file needs to be in HxWxCxN since C interprets the dimensions differently than R
+  rhdf5::h5createDataset(file_name , "data", c(resize_height,resize_width,3,n), storage.mode = "double", showWarnings = FALSE,level=9 ,chunk = c(batch_size,3,resize_width,resize_height))
+  rhdf5::h5createDataset(file_name , "label", c(1,n), storage.mode = "double", showWarnings = FALSE,level = 9, chunk =c(batch_size,1))
   i<-1
   chunks <-0
   for(k in 1:n){
@@ -44,12 +47,15 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
     if(i==batch_size+1){
       i <-1
       lower<-chunks*batch_size+1
-      upper<-lower+batch_size-1
       
-      #h5write(data_batch, file = file_name, name ="data", index = list(lower:upper,1:3,1:resize_width,1:resize_height))
-      rhdf5::h5write(data_batch, file = file_name, name ="data", start = c(lower,1,1,1),count=c(batch_size,3,resize_width,resize_height))
-      #h5write(label_batch, file = file_name, name ="label", index = list(lower:upper,1))
-      rhdf5::h5write(label_batch, file = file_name, name ="label", start = c(lower,1),count=c(batch_size,1))
+      temp_batch <-aperm(data_batch,c(4,3,2,1))
+      
+      rhdf5::h5write(temp_batch, file = file_name, name ="data", start = c(1,1,1,lower),count=c(resize_height,resize_width,3,batch_size))
+      
+      temp_batch <- aperm(label_batch,c(2,1))
+      
+      rhdf5::h5write(temp_batch, file = file_name, name ="label", start = c(1,lower),count=c(1,batch_size))
+      
       chunks <- chunks +1
     }
   }

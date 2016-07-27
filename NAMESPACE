@@ -2,6 +2,7 @@
 
 export("%>%")
 export(adjustNetwork)
+export(computeMeanHdf5)
 export(makeDir)
 export(padImage)
 export(prepareHdf5)

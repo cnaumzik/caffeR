@@ -9,14 +9,14 @@ padImage <- function(image, dim, resize_width, resize_height) {
 
   if (dim == 1) {
     image <- image %>%
-      EBImage::resize(h = resize_height)
+      EBImage::resize(w = resize_width)
 
     lower <- ceiling((resize_height - dim(image)[other_dim]) / 2)
     upper <- lower + dim(image)[other_dim] - 1
     image_output[ , lower:upper, ] <- image
   } else {
     image <- image %>%
-      EBImage::resize(w = resize_width)
+      EBImage::resize(h = resize_heigth)
 
     lower <- ceiling((resize_width - dim(image)[other_dim]) / 2)
     upper <- lower + dim(image)[other_dim] - 1
