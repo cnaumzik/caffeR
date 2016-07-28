@@ -2,12 +2,12 @@
 computeMeanHdf5 <-
   function(caffedir = "~/Documents/caffe",
            name = "My_Model",
-           imagedir = "~/main" ,
+           imagedir = "~/main",
+           suffix = NULL,
            method = "pixel",
            resize_width = 227,
            resize_height = 227) {
-    imagedir<-"~/Promotion/Research/Code/Data/Catsvsdogs/main"
-    images <- list.files(imagedir, ".jpg")
+    images <- list.files(imagedir, paste0(suffix,".jpg"))
     if (length(images) == 0) {
       stop(
         paste0(
@@ -24,8 +24,8 @@ computeMeanHdf5 <-
     } else{
       image_mean <- array(0, dim = c(resize_width, resize_height,3))
     }
-    #file_name <- paste0(caffedir,"/data/",name,"image_mean.h5")
-    file_name <- "~/Promotion/mean.h5"
+    file_name <- paste0(caffedir,"/data/",name,"image_mean.h5")
+    
     rhdf5::h5createFile(file_name)
     
     
