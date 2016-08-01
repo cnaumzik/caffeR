@@ -9,8 +9,8 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
                         padding = FALSE,
                         resize_height = 227,
                         resize_width = 227,
-                        mean_file = "~/main/mean.h5",
-                        batch_size = 10) {
+                        mean_file = "~/main/image_mean.h5",
+                        batch_size = 512) {
   on.exit(closeAllConnections())
   
   if (is.null(image_ids)) {
@@ -41,7 +41,7 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
     stop("The image mean dimensions are not correct")
   }
   
-  #Hdf5 file für images anlegen
+  #Hdf5 file f?r images anlegen
   file_name <- paste0(caffedir, "/data/", name, "/", phase, ".h5")
   
   rhdf5::h5createFile(file_name)
@@ -51,11 +51,12 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
   if (n != length(image_ids)) {
     stop("Number of labels and Images do not match")
   }
+  batch_size <- adjustBatchSize(n,batch_size)
   image_list <-
     list.files(imagedir, pattern = paste0(suffix, ".jpg"))
   if (length(image_list) < length(image_ids)) {
     print(length(image_list))
-    warning(
+    print(
       "Some images can't be found in the given directory - Creating images based on supplied image mean"
     )
     generateNewImages (imagedir ,
@@ -135,4 +136,13 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
         paste0(caffedir, "/data/", name, "/", phase, ".txt"),
         append = FALSE)
   
+}
+#====================================================================================================================================================================
+adjustBatchSize<-function(n,batch_size){
+ if(n%%batch_size != 0){
+   adjustBatchSize(n,batch_size-1)
+ } else{
+   return(batch_size)
+ }
+   
 }
