@@ -24,8 +24,9 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
       "The image mean file does not exist. Please ensure to run computeMeanHdf first and that you provided the correct path"
     )
   }
-  
-  
+  #Currently the is a limit on the max number of units in caffe -  splitting is required
+  INT_MAX<- 2*1024^3-1
+  max_entries <- INT_MAX/(3*resize_height*resize_width)
   #Image mean einlesen
   image_mean <- rhdf5::h5read(mean_file, "mean")
   rhdf5::H5close()
@@ -40,13 +41,16 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
   if (sum(dim(image_mean) != c(resize_width , resize_height , 3)) > 0) {
     stop("The image mean dimensions are not correct")
   }
-  
+  n <- length(values)
+  if(n>max_entries){
+    splitting_required <- TRUE
+  }
   #Hdf5 file f?r images anlegen
   file_name <- paste0(caffedir, "/data/", name, "/", phase, ".h5")
   
   rhdf5::h5createFile(file_name)
   
-  n <- length(values)
+  
   
   if (n != length(image_ids)) {
     stop("Number of labels and Images do not match")
