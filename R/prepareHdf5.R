@@ -117,7 +117,6 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
       batch_counter <- batch_counter + 1 
     }
     if (batch_counter == max_batches && k!=n) {
-      
       num_files <- num_files + 1
       file_name <- paste0(caffedir, "/data/", name, "/", phase, ".h5_0",num_files)
       generateHDF5(file_name , resize_height , resize_width , max_batches*batch_size)
@@ -125,7 +124,9 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
             paste0(caffedir, "/data/", name, "/", phase, ".txt"),
             append = TRUE)
     }
+    
     i <- i + 1
+    
     if (k %% 1000 == 0) {
       print(paste0("Processed ", k, "images. Only ", n - k, " to go."))
     }
@@ -133,9 +134,6 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
   
   
   rhdf5::H5close()
-  write(paste0(phase, ".h5"),
-        paste0(caffedir, "/data/", name, "/", phase, ".txt"),
-        append = FALSE)
   
 }
 #====================================================================================================================================================================
