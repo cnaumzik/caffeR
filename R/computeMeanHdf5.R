@@ -5,8 +5,8 @@ computeMeanHdf5 <-
            imagedir = "~/main",
            suffix = NULL,
            method = "pixel",
-           resize_width = 227,
-           resize_height = 227) {
+           resize_width = 256,
+           resize_height = 256) {
     images <- list.files(imagedir, paste0(suffix,".jpg"))
     if (length(images) == 0) {
       stop(
@@ -17,7 +17,7 @@ computeMeanHdf5 <-
         )
       )
     }
-    
+  
     
     if (method == "channel") {
       image_mean <- c(0, 0, 0)
@@ -25,15 +25,14 @@ computeMeanHdf5 <-
       image_mean <- array(0, dim = c(resize_width, resize_height,3))
     }
     file_name <- paste0(caffedir,"/data/",name,"/image_mean.h5")
-    
-    rhdf5::h5createFile(file_name)
+    fid<-rhdf5::h5createFile(file_name)
     
     
     N <- length(images)
-    
+    print(paste("Processing",N,"images"))
     if (method == "channel") {
       for (k in 1:N) {
-        if(k%%1000 = 0){
+        if(k%%1000 == 0){
           print(paste0("Processed ",k," images. Only ",N-k," to go."))
         }
         current_image <-
@@ -46,7 +45,7 @@ computeMeanHdf5 <-
       }
     } else {
       for(k in 1:N) {
-        if(k%%1000 = 0){
+        if(k%%1000 == 0){
           print(paste0("Processed ",k," images. Only ",N-k," to go."))
         }
         current_image <-
@@ -67,5 +66,4 @@ computeMeanHdf5 <-
       
     }
     rhdf5::h5write(image_mean,file=file_name,"mean")
-    rhdf5::H5Fclose(file_name)
   }

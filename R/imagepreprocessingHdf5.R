@@ -1,7 +1,6 @@
 #' @export
 padImage <- function(image, dim, resize_width, resize_height , image_mean) {
-  
-  image_output <- array(0, dim = c(resize_width, resize_height, 3))
+  image_output <- array(image_mean, dim = c(resize_width, resize_height, 3))
   
   other_dim <- ifelse(dim == 1, 2, 1)
   
@@ -23,14 +22,14 @@ padImage <- function(image, dim, resize_width, resize_height , image_mean) {
     image_output[lower:upper, , ] <- image
   }
   
-  image_output <- EBImage::Image(image_output, colormode = "color") - image_mean %>%
-    EBImage::equalize(range = c(0, 1), levels = 256)
+  image_output <- EBImage::Image(image_output, colormode = "color") - image_mean #%>%
+    #EBImage::equalize(range = c(0, 1), levels = 256)
   return(image_output)
 }
 
 #'@export
 preprocessImagesHdf5 <- function(input_path = NULL, padding = FALSE,
-                             resize_height = 227, resize_width = 300 , image_mean = NULL) {
+                             resize_height = 256, resize_width = 256 , image_mean = NULL) {
   
   if (is.null(input_path) || !file.exists(input_path)) {
     stop("Argument 'input_path' is NULL but must specify a folder destination.")

@@ -7,8 +7,8 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
                         image_ids = NULL,
                         suffix = NULL,
                         padding = FALSE,
-                        resize_height = 227,
-                        resize_width = 227,
+                        resize_height = 256,
+                        resize_width = 256,
                         mean_file = "~/main/image_mean.h5",
                         batch_size = 512) {
   on.exit(closeAllConnections())
@@ -21,7 +21,7 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
   }
   if (is.null(mean_file) || !file.exists(mean_file)) {
     stop(
-      "The image mean file does not exist. Please ensure to run computeMeanHdf first and that you provided the correct path"
+      "The image mean file does not exist. Please ensure to run computeMeanHdf5 first and that you provided the correct path"
     )
   }
   n <- length(values)
@@ -29,11 +29,10 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
   #Currently the is a limit on the max number of units in caffe -  splitting is required
   INT_MAX<- 2*1024^3-1
   max_entries <- INT_MAX/(3*resize_height*resize_width)
-  max_batches <- max_entries%/%batch_size
+  max_batches <- max(max_entries%/%batch_size,1)
   
   #Image mean einlesen
   image_mean <- rhdf5::h5read(mean_file, "mean")
-  rhdf5::H5close()
   
   # Channel mean supplied
   if (length(image_mean) == 3) {
@@ -52,11 +51,14 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
   } else {
     file_name <- paste0(caffedir, "/data/", name, "/", phase, ".h5")
   }
-  generateHDF5(file_name , resize_height , resize_width , max_batches*batch_size)
+  file_name <- paste0("~/Promotion/Research/Code/Data/Craigslist/train.h5")
+  createHDF5(file_name , resize_height , resize_width , max_batches*batch_size,batch_size)
+  #write(file_name,
+        #paste0(caffedir, "/data/", name, "/", phase, ".txt"),
+        #append = FALSE)
   write(file_name,
-        paste0(caffedir, "/data/", name, "/", phase, ".txt"),
-        append = TRUE)
-  
+  paste0("~/Promotion/Research/Code/Data/Craigslist/test.txt"),
+  append = FALSE)
   if (n != length(image_ids)) {
     stop("Number of labels and Images do not match")
   }
@@ -133,7 +135,6 @@ prepareHdf5 <- function(caffedir = "~/Documents/caffe" ,
   }
   
   
-  rhdf5::H5close()
   
 }
 #====================================================================================================================================================================
@@ -168,5 +169,4 @@ createHDF5 <- function(file_name, resize_height , resize_width , n , batch_size)
     showWarnings = FALSE,
     level = 9
   )
-  rdhf5::H5close()
 }
