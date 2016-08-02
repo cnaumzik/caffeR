@@ -24,7 +24,7 @@ computeMeanHdf5 <-
     } else{
       image_mean <- array(0, dim = c(resize_width, resize_height,3))
     }
-    file_name <- paste0(caffedir,"/data/",name,"image_mean.h5")
+    file_name <- paste0(caffedir,"/data/",name,"/image_mean.h5")
     
     rhdf5::h5createFile(file_name)
     
@@ -33,6 +33,9 @@ computeMeanHdf5 <-
     
     if (method == "channel") {
       for (k in 1:N) {
+        if(k%%1000 = 0){
+          print(paste0("Processed ",k," images. Only ",N-k," to go."))
+        }
         current_image <-
           EBImage::readImage(paste0(imagedir, "/", images[k]),
                              type = "jpg",
@@ -43,6 +46,9 @@ computeMeanHdf5 <-
       }
     } else {
       for(k in 1:N) {
+        if(k%%1000 = 0){
+          print(paste0("Processed ",k," images. Only ",N-k," to go."))
+        }
         current_image <-
           EBImage::readImage(paste0(imagedir, "/", images[k]),
                              type = "jpg",
@@ -50,7 +56,6 @@ computeMeanHdf5 <-
           EBImage::resize (w = resize_width , h = resize_height)
       
         image_mean <- image_mean + current_image
-        print(paste0(k," : ",max(current_image), ":" , max(image_mean)))
       }
       
     }
@@ -62,5 +67,5 @@ computeMeanHdf5 <-
       
     }
     rhdf5::h5write(image_mean,file=file_name,"mean")
-    rhdf5::H5close()
+    rhdf5::H5Fclose(file_name)
   }
