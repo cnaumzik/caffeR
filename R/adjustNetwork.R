@@ -6,15 +6,17 @@ adjustNetwork <-
            no_new_layers = 1 ,
            freeze_all = TRUE ,
            lr = NULL,
-           num_output = 2,
-           loss = "EuclideanLoss") {
+           num_output = 1,
+           loss = "EuclideanLoss",
+           backend = "HDF5") {
     source_path <- paste0(caffedir,"/models/",network_name,"/train_val.prototxt")
-
+    if(!file.exists(source_path)){
+      stop(paste0("No model named ",network_name," exists. Please make sure that you supplied the correct name and that you downloaded the network from the model zoo."))
+    }
+    
     target_path <- paste0(caffedir,"/models/",name,"/train_val.prototxt")
 
-    #system(paste0("sudo cp " , source_path , target_path))
-
-    #file <- readLines(target_path)
+    
     file <- readLines(source_path)
     layer_indx <- c(grep("layer", file) , length(file) + 1)
 
@@ -49,22 +51,18 @@ adjustNetwork <-
     }
 
     for (k in 1:(length(layer_indx) - 1)) {
-      current_layer <- file[layer_indx[k]:(layer_indx[k + 1] - 1)]
-
-      current_layer <-
-        adjustLayer(current_layer,
+      file[layer_indx[k]:(layer_indx[k + 1] - 1)] <-
+        adjustLayer(file[layer_indx[k]:(layer_indx[k + 1] - 1)],
                     caffedir ,
                     name ,
                     vision_lr[k] ,
                     new_layer[k] ,
                     new_bottom[k],
-                    loss)
-
-
-      file[layer_indx[k]:(layer_indx[k + 1] - 1)] <- current_layer
+                    loss,
+                    backend)
     }
-    # Adjusting # output in final layer (manual workarounf until additional functions are included)
-    k <- max(which(changed_layers[1, ]))
+    # Adjusting # output in final layer (manual workaround until additional functions are included)
+    k <- max(which(new_layer))
     current_layer <- file[layer_indx[k]:(layer_indx[k + 1] - 1)]
     current_layer[grep("num_output", current_layer)] <-
       paste0("num_output: ", num_output)
@@ -138,20 +136,25 @@ adjustLayer <-
            vision_lr = 1 ,
            new_layer = FALSE,
            new_bottom = FALSE,
-           loss = "EuclideanLoss") {
-    indx <- grep("type", layer)
-
+           loss = "EuclideanLoss",
+           backend = "HDF5") {
+    
     if (is.null(layer)) {
       stop("No layer provided")
     }
-
+    
+    indx <- grep("type", layer)
+    
     if (length(grep("Data" , layer[indx])) > 0) {
-      layer <- adjustDataLayer(layer, caffedir , name)
-
-    } else if (length(grep("loss" , layer[indx] , ignore.case = TRUE)) > 0 ||
-               length(grep("accuracy" , layer[indx] , ignore.case = TRUE)) > 0) {
+      if(backend == "lmdb" || backend == "Lmdb"){
+        layer <- adjustDataLayer(layer, caffedir , name)
+      } else {
+        #TODO adjust data layer to HDF5 data layer
+      }
+    } else if (length(grep("loss" , layer[indx] , ignore.case = TRUE)) > 0) {
       layer <- adjustLossLayer(layer, name , new_bottom , loss)
-
+    } else if (length(grep("accuracy" , layer[indx] , ignore.case = TRUE)) > 0){
+      #TODO adjust Accuracylayer
     } else if (length(grep("Convolution" , layer[indx])) > 0 ||
                length(grep("Pooling" , layer[indx])) > 0 ||
                length(grep("LRN" , layer[indx])) > 0 ||
@@ -324,16 +327,20 @@ adjustActivationLayer <-
     return(layer)
   }
 #========================================================================================================================================================
-#Function changes the argument in the field currentName. currentName is expected to look like "abed: \"yyy\"" and will be changed to "abed: \"yyy-name\""
-
-changeLayerName <- function(currentName , name = "My_model") {
-  extracted_name <-
-    gsub("\"", "", gsub("[A-z]*:\\s" , "" , trimws(currentName)))
-
-  new_name <-
-    gsub(extracted_name ,
-         paste0(extracted_name , "-" , name) ,
-         currentName)
-
-  return(new_name)
+#Function changes the value in Field. The value in Field can be a string, i.e. marked with " ", or a number.
+#'@export
+changeFieldValue <- function(Field , newvalue = NULL , value_type = "string") {
+  if(is.null(newvalue)){
+    stop(paste0("No new value for field ",Field," supplied"))
+  }
+  if(value_type == "string"){
+  extracted_value <-
+    gsub("\"", "", gsub("[A-z]*:\\s" , "" , trimws(Field)))
+  } else {
+    extracted_value <-
+      gsub("[A-z]*:\\s" , "" , trimws(Field))
+  }
+  newField <-
+    gsub(extracted_value , newvalue , Field)
+  return(newField)
 }
