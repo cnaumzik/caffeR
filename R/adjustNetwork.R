@@ -8,18 +8,31 @@ adjustNetwork <-
            lr = NULL,
            num_output = 1,
            loss = "EuclideanLoss",
-           backend = "HDF5") {
-    source_path <- paste0(caffedir,"/models/",network_name,"/train_val.prototxt")
-    if(!file.exists(source_path)){
-      stop(paste0("No model named ",network_name," exists. Please make sure that you supplied the correct name and that you downloaded the network from the model zoo."))
+           delete_accuracy = FALSE,
+           backend = "HDF5",
+           batch_size_train = 128,
+           batch_size_val = 64) {
+    source_path <-
+      paste0(caffedir, "/models/", network_name, "/train_val.prototxt")
+    
+    if (!file.exists(source_path)) {
+      stop(
+        paste0(
+          "No model named ",
+          network_name,
+          " exists. Please make sure that you supplied the correct name and that you downloaded the network from the model zoo."
+        )
+      )
     }
     
-    target_path <- paste0(caffedir,"/models/",name,"/train_val.prototxt")
-
+    target_path <-
+      paste0(caffedir, "/models/", name, "/train_val.prototxt")
+    
     
     file <- readLines(source_path)
+    
     layer_indx <- c(grep("layer", file) , length(file) + 1)
-
+    
     if (length(layer_indx) - 1 < no_new_layers) {
       stop(
         paste0(
@@ -28,48 +41,59 @@ adjustNetwork <-
           " layers. Choose a different network or give a lower number of layers to be changed."
         )
       )
-
+      
     }
-
+    
     changed_layers <- identifyNewLayers(file , no_new_layers)
-    new_layer <- changed_layers[1, ]
-    new_bottom <- changed_layers[2, ]
-
-
+    
+    new_layer <- changed_layers[1,]
+    new_bottom <- changed_layers[2,]
+    
     vision_lr <- rep(0.1, length(layer_indx) - 1)
-
+    
     if (!is.null(lr)) {
       vision_lr <- lr
     } else {
       if (freeze_all) {
         vision_lr[!new_layer] <- 0
-
+        
       } else {
         vision_lr[new_layer] <- 100
       }
-
+      
     }
-
+    
     for (k in 1:(length(layer_indx) - 1)) {
+      current_layer <- unlist(file[layer_indx[k]:(layer_indx[k + 1] - 1)])
+      current_layer <- adjustLayer(
+        current_layer,
+        caffedir ,
+        name ,
+        vision_lr[k] ,
+        new_layer[k] ,
+        new_bottom[k],
+        loss,
+        delete_accuracy,
+        backend,
+        batch_size_train,
+        batch_size_val
+      )
       file[layer_indx[k]:(layer_indx[k + 1] - 1)] <-
-        adjustLayer(file[layer_indx[k]:(layer_indx[k + 1] - 1)],
-                    caffedir ,
-                    name ,
-                    vision_lr[k] ,
-                    new_layer[k] ,
-                    new_bottom[k],
-                    loss,
-                    backend)
+        unlist(current_layer)
     }
+    
     # Adjusting # output in final layer (manual workaround until additional functions are included)
     k <- max(which(new_layer))
+    
     current_layer <- file[layer_indx[k]:(layer_indx[k + 1] - 1)]
-    current_layer[grep("num_output", current_layer)] <-
-      paste0("num_output: ", num_output)
+    output_indx <- grep("num_output", current_layer)
+    current_layer[output_indx] <-
+      changeFieldValue(current_layer[output_indx], num_output, "integer", FALSE)
+    
     file[layer_indx[k]:(layer_indx[k + 1] - 1)] <- current_layer
-
+    
     writeLines(file, target_path)
-
+    
   }
 #========================================================================================================================================================================
 
@@ -78,50 +102,62 @@ identifyNewLayers <- function (file = NULL ,
   if (is.null(file)) {
     stop("No .prototxt file supplied")
   }
-
+  
   layer_indx <- c(grep("layer", file) , length(file) + 1)
-
+  
   n <- length(layer_indx)
-
+  
   changed_layers <- matrix(rep(FALSE, 2 * (n - 1)) , nrow = 2)
-
+  
   i <- no_new_layers
   k <- n
   while (i > 0) {
     layer <- file[layer_indx[k - 1]:layer_indx[k] - 1]
     indx <- grep("type", layer)
-
-    if (length(grep("Data" , layer[indx])) > 0 ||
-        length(grep("loss" , layer[indx] , ignore.case = TRUE)) > 0 ||
-        length(grep("accuracy" , layer[indx], ignore.case = TRUE)) > 0) {
-
-    } else {
+    layer_types <-
+      c("Data",
+        "Loss",
+        "Accuracy",
+        "Convolution",
+        "Pooling",
+        "LRN",
+        "InnerProduct")
+    current_type <-
+      sapply(layer_types, function(x) {
+        if (length(grep(x, layer[indx], ignore.case = TRUE)) > 0) {
+          return(TRUE)
+        } else{
+          return(FALSE)
+        }
+      })
+    
+    if (sum(current_type[-(1:3)])) {
       changed_layers[1, k - 1] <- TRUE
       i <- i - 1
     }
     k <- k - 1
-
+    
   }
   if (no_new_layers > 0) {
-    k <- min(which(changed_layers[1, ]))
+    k <- min(which(changed_layers[1,]))
     while (k <= (n - 1)) {
       layer <- file[layer_indx[k]:layer_indx[k + 1] - 1]
-
+      
       bottom <-
         gsub("\"", "", gsub("[A-z]*:\\s" , "" , trimws(layer[grep("bottom" , layer)])))
       top <-
         gsub("\"", "", gsub("[A-z]*:\\s" , "" , trimws(layer[grep("top" , layer)])))
-
+      
       if (bottom == top) {
         k <- k + 1
       } else {
         pos <- k + 1
         k <- n
       }
-
+      
     }
     changed_layers[2, pos:(n - 1)] <- TRUE
-
+    
   }
   return(changed_layers)
 }
@@ -133,39 +169,37 @@ adjustLayer <-
   function(layer,
            caffedir = "~/Documents/caffe",
            name = "My_model",
-           vision_lr = 1 ,
+           vision_lr = NULL ,
            new_layer = FALSE,
            new_bottom = FALSE,
            loss = "EuclideanLoss",
-           backend = "HDF5") {
+           delete_accuracy = TRUE,
+           backend = "HDF5",
+           batch_size_train = 64,
+           batch_size_val = 32) {
     
     if (is.null(layer)) {
       stop("No layer provided")
     }
     
     indx <- grep("type", layer)
-    
-    if (length(grep("Data" , layer[indx])) > 0) {
+    layer_types <- c("Data","Loss","Accuracy","Convolution","Pooling","LRN","InnerProduct")
+    current_type <- sapply(layer_types,function(x){if(length(grep(x,layer[indx],ignore.case=TRUE))>0){return(TRUE)}else{return(FALSE)}})
+
+    if(current_type[1]){
       if(backend == "lmdb" || backend == "Lmdb"){
-        layer <- adjustDataLayer(layer, caffedir , name)
+        layer <- adjustDataLayer(layer, caffedir , name , batch_size_train , batch_size_val)
       } else {
-        #TODO adjust data layer to HDF5 data layer
+        layer <- adjustDataLayerToHDF5(layer, caffedir , name , batch_size_train , batch_size_val)
       }
-    } else if (length(grep("loss" , layer[indx] , ignore.case = TRUE)) > 0) {
+    } else if (current_type[2]) {
       layer <- adjustLossLayer(layer, name , new_bottom , loss)
-    } else if (length(grep("accuracy" , layer[indx] , ignore.case = TRUE)) > 0){
-      #TODO adjust Accuracylayer
-    } else if (length(grep("Convolution" , layer[indx])) > 0 ||
-               length(grep("Pooling" , layer[indx])) > 0 ||
-               length(grep("LRN" , layer[indx])) > 0 ||
-               length(grep("InnerProduct" , layer[indx])) > 0) {
-      layer <-
-        adjustVisionLayer(layer , name , vision_lr , new_layer , new_bottom)
-
+    } else if (current_type[3]) {
+      layer <- adjustAccuracyLayer(layer , name, new_bottom , loss , delete_accuracy)
+    } else if (sum(current_type[4:7])) {
+      layer <- adjustVisionLayer(layer , name , vision_lr , new_layer , new_bottom)
     } else {
-      layer <-
-        adjustActivationLayer(layer , name , new_layer , new_bottom)
-
+      layer <- adjustActivationLayer(layer , name , new_layer , new_bottom)
     }
     return(layer)
   }
@@ -180,57 +214,122 @@ adjustDataLayer <-
     if (is.null(layer)) {
       stop("No data layer provided")
     }
-
-
-    if (length(grep("TRAIN", layer)) > 0) {
-      layer[grep("mean_file", layer)] <-
-        paste0("mean_file: \"" ,
-               caffedir ,
-               "/data/" ,
-               name ,
-               "/" ,
-               name ,
-               "_train_mean.binaryproto\"")
-
-      layer[grep("source", layer)] <-
-        paste0("source: \"" ,
-               caffedir ,
-               "/examples/",
-               name ,
-               "/" ,
-               name ,
-               "_train_lmdb\"")
-
-      layer[grep("batch_size", layer)] <-
-        paste0("batch_size: ", batch_size_train)
-
-    } else {
-      layer[grep("mean_file", layer)] <-
-        paste0("mean_file: \"" ,
-               caffedir ,
-               "/data/" ,
-               name ,
-               "/" ,
-               name ,
-               "_val_mean.binaryproto\"")
-
-      layer[grep("source", layer)] <-
-        paste0("source: \"" ,
-               caffedir ,
-               "/examples/",
-               name ,
-               "/" ,
-               name ,
-               "_val_lmdb\"")
-
-      layer[grep("batch_size", layer)] <-
-        paste0("batch_size: ", batch_size_val)
-
+    indx <-
+      unlist(sapply(c("mean_file", "source", "batch_size"), function(x) {
+        grep(x , layer)
+      }, USE.NAMES = FALSE))
+    field_type <- c("string", "string", "integer")
+    phase <- "train"
+    batch_size <- batch_size_train
+    
+    if (length(grep("TEST", layer)) > 0) {
+      phase <- "test"
+      batch_size <- batch_size_val
     }
-
+    new <-
+      c(
+        paste0(caffedir , "/data/" , name , "/" , phase, "_mean.binaryproto"),
+        paste0(caffedir , "/examples/", name, "/", phase, "_lmdb"),
+        batch_size
+      )
+    layer[indx] <- sapply(seq(1:3), function(x) {
+      changeFieldValue(layer[indx[x]] , new[x] , field_type[x] , FALSE)
+    })
+    
     return(layer)
-
+    
   }
+#==================================================================================================================================================================
+#Function adjust data layer to HDF5 format
+adjustDataLayerToHDF5 <- function(layer,
+                                  caffedir = "~/Documents/caffe",
+                                  name = "My_model",
+                                  batch_size_train = 64,
+                                  batch_size_val = 32) {
+  if (is.null(layer)) {
+    stop("No data layer provided")
+  }
+  #Removing all unnecessary fields from Lmdb data layers
+  delete <-
+    unlist(sapply(c(
+      "#",
+      "transform_param",
+      "crop_size",
+      "mirror",
+      "mean_file",
+      "backend"
+    ), function(x) {
+      grep(x , layer)
+    }, USE.NAMES = FALSE))
+  layer[delete] <- ""
+  
+  #Removing superflous }
+  i <- grep("}", layer)
+  layer[i] <-
+    unlist(sapply(1:length(i), function(x) {
+      if (layer[i[x] - 1] == "" &&
+          layer [i[x] + 1] == "") {
+        return("")
+      } else{
+        return(layer[i[x]])
+      }
+    }))
+  
+  #Identifying fields that need to change
+  indx <-
+    c(unlist(sapply(c("type", "source", "batch_size"), function(x) {
+      grep(x , layer)
+    }, USE.NAMES = FALSE)))
+  
+  #Differentiate between training and test data layers
+  phase <- "train"
+  batch_size <- batch_size_train
+  if (length(grep("TEST", layer)) > 0) {
+    phase <- "test"
+    batch_size <- batch_size_val
+  }
+  #New input for fields
+  new <- c("HDF5Data",
+           paste0(caffedir , "/data/", name, "/", phase, ".txt"),
+           batch_size)
+  field_type <- c("string" , "string" , "integer")
+  layer[indx] <- sapply(seq(1:3), function(x) {
+    changeFieldValue(layer[indx[x]] , new[x] , field_type[x] , FALSE)
+  })
+  return(layer)
+}
+
+#==================================================================================================================================================================
+#Function adjust accuracy layer to compute accuracy by applying the same loss function as loss or by deleting the layer completely
+adjustAccuracyLayer <- function(layer,
+                                name = "My_model",
+                                new_bottom = TRUE,
+                                loss = "EuclideanLoss",
+                                delete = TRUE) {
+  if (is.null(layer)) {
+    stop("No accuracy layer provided")
+  }
+  if (delete) {
+    layer <- ""
+  } else {
+    indx <-
+      unlist(sapply(c("type", "bottom"), function(x) {
+        grep(x , layer)
+      }, USE.NAMES = FALSE))
+    
+    layer[indx[1]] <-
+      changeFieldValue(layer[indx[1]] , loss , "string" , FALSE)
+    
+    if (new_bottom) {
+      change_indx <- grep("label" , layer[indx[-1]])
+      
+      layer[indx[change_indx]] <-
+        changeFieldValue(layer[indx[change_indx]] , name , "string" , TRUE)
+      
+    }
+  }
+  return(layer)
+}
 #==================================================================================================================================================================
 #Function changes type of loss layer as well as name of bottom layer if the respective layer has been newly initialized
 adjustLossLayer <-
@@ -238,34 +337,25 @@ adjustLossLayer <-
            name = "My_model" ,
            new_bottom = TRUE ,
            loss = "EuclideanLoss") {
-
     if (is.null(layer)) {
-      stop("No loss/accuracy layer provided")
+      stop("No loss layer provided")
     }
-    if(loss == "EuclideanLoss") {
-
-      layer[grep("type", layer)] <- paste0("type: \"", loss, "\"")
-      #layer[grep("name", layer)] <- paste0("name: \"loss\"")
-      layer[grep("top", layer)] <- paste0("top: \"loss\"")
-
-    } else {
-
-      if (length(grep("loss", layer)) > 0) {
-
-        layer[grep("type", layer)] <- paste0("type: \"", loss, "\"")
-      }
-
-      if (new_bottom) {
-
-        bottom_indx <- grep("bottom" , layer)
-
-        change_indx <- switch(grep("label" , layer[bottom_indx]), 2, 1)
-
-        layer[bottom_indx[change_indx]] <-
-          changeLayerName(layer[bottom_indx[change_indx]])
-
+    indx <-
+      unlist(sapply(c("type", "bottom"), function(x) {
+        grep(x , layer)
+      }, USE.NAMES = FALSE))
+    
+    layer[indx[1]] <-
+      changeFieldValue(layer[indx[1]] , loss , "string" , FALSE)
+    
+    if (new_bottom) {
+      change_indx <- grep("label" , layer[indx[-1]])
+      
+      layer[indx[change_indx]] <-
+        changeFieldValue(layer[indx[change_indx]] , name , "string" , TRUE)
+      
     }
-    }
+    
     return(layer)
   }
 #=========================================================================================================================================================
@@ -275,31 +365,38 @@ adjustLossLayer <-
 adjustVisionLayer <-
   function(layer ,
            name = "My_model" ,
-           vision_lr = 1 ,
+           vision_lr = NULL ,
            new_layer = FALSE ,
            new_bottom = FALSE) {
     if (is.null(layer)) {
       stop("No vision layer provided")
     }
-
+    indx <-
+      unlist(sapply(c("name", "bottom", "top", "lr_mult"), function(x) {
+        grep(x , layer)
+      }, USE.NAMES = FALSE))
+    
     if (new_layer) {
-      layer[grep("name" , layer)] <-
-        changeLayerName(layer[grep("name" , layer)] , name)
-      layer[grep("top" , layer)] <-
-        changeLayerName(layer[grep("top" , layer)] , name)
-
+      #Changing name and top from "xyz" to "xyz-My_model"
+      layer[indx[1]] <-
+        changeFieldValue(layer[indx[1]] , name , "string" , TRUE)
+      layer[indx[3]] <-
+        changeFieldValue(layer[indx[3]] , name , "string" , TRUE)
+      
       if (new_bottom) {
-        layer[grep("bottom" , layer)] <-
-          changeLayerName(layer[grep("bottom" , layer)] , name)
-
+        #Changing bottom from "xyz" to "xyz-My_model"
+        layer[indx[2]] <-
+          changeFieldValue(layer[indx[2]] , name , "string" , TRUE)
       }
-
-
     }
-
-    layer[grep("lr_mult" , layer)] <-
-      gsub("[0-9]*$", vision_lr, layer[grep("lr_mult" , layer)])
-
+    #Setting all learning rate (for bias and weight) to vision_lr
+    if (!is.null(vision_lr)) {
+      layer[indx[-seq(1:3)]] <-
+        sapply(indx[-seq(1:3)], function(x) {
+          changeFieldValue(layer[x] , vision_lr , "integer" , FALSE)
+        })
+    }
+    
     return(layer)
   }
 #========================================================================================================================================================
@@ -311,25 +408,28 @@ adjustActivationLayer <-
     if (is.null(layer)) {
       stop("No activation layer provided")
     }
+    indx <-
+      sapply(c("name", "bottom", "top"), function(x) {
+        grep(x , layer)
+      }, USE.NAMES = FALSE)
     if (new_layer) {
-      layer[grep("name" , layer)] <-
-        changeLayerName(layer[grep("name" , layer)] , name)
-
+      layer[indx[1]] <-
+        changeFieldValue(layer[indx[1]] , name , "string" , TRUE)
+    } 
       if (new_bottom) {
-        layer[grep("bottom" , layer)] <-
-          changeLayerName(layer[grep("bottom" , layer)] , name)
-        layer[grep("top" , layer)] <-
-          changeLayerName(layer[grep("top" , layer)] , name)
-
+        layer[indx[2]] <-
+          changeFieldValue(layer[indx[2]] , name , "string" , TRUE)
+        layer[indx[3]] <-
+          changeFieldValue(layer[indx[3]] , name , "string" , TRUE)
+        
       }
-
-    }
+      
     return(layer)
   }
 #========================================================================================================================================================
 #Function changes the value in Field. The value in Field can be a string, i.e. marked with " ", or a number.
 #'@export
-changeFieldValue <- function(Field , newvalue = NULL , value_type = "string") {
+changeFieldValue <- function(Field , newvalue = NULL , value_type = "string" , add = FALSE) {
   if(is.null(newvalue)){
     stop(paste0("No new value for field ",Field," supplied"))
   }
@@ -340,7 +440,12 @@ changeFieldValue <- function(Field , newvalue = NULL , value_type = "string") {
     extracted_value <-
       gsub("[A-z]*:\\s" , "" , trimws(Field))
   }
+  if(add){
+    newField <-
+      gsub(extracted_value , paste0(extracted_value,"-",newvalue) , Field)
+  } else {
   newField <-
     gsub(extracted_value , newvalue , Field)
+  }
   return(newField)
 }
