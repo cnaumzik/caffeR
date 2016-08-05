@@ -1,6 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-caffeR: a wrapper to 'caffe'
+caffeR: a wrapper for 'caffe'
 ============================
 
 [![Build Status](https://travis-ci.org/cnaumzik/caffeR.svg?branch=master)](https://travis-ci.org/cnaumzik/caffeR) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/caffeR)](https://cran.r-project.org/package=caffeR) [![Coverage Status](https://img.shields.io/codecov/c/github/cnaumzik/caffeR/master.svg)](https://codecov.io/github/cnaumzik/caffeR?branch=master)
