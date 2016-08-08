@@ -2,14 +2,10 @@
 predictValue <-
   function(caffedir = "~/caffe",
            name = "My_Model",
-           image_file = "~/caffe/examples/images/cat.jpg",
-           Net_name = NULL,
-           padding = NULL,
-           resize_height = NULL,
-           resize_width = NULL,
-           image_mean = NULL) {
-    if(sum(apply(c(padding,resize_height,resize_width,image_mean),1,is.null()))>0) {
-      stop("Missing arguments to function predictValue.")
+           image = NULL,
+           Net_name = NULL) {
+    if(is.null(image) || !file.exists(image)) {
+      stop("No image supplied")
     }
     deploy_file <- paste0(caffedir, "/models/", name, "/deploy.prototxt")
     if (!file.exists(deploy_file)) {
@@ -28,13 +24,6 @@ predictValue <-
         )
       )
     }
-    
-    
-    image <-
-      preprocessImagesHdf5(image_file, padding, resize_height, resize_width, image_mean)
-    image_file <- paste0(caffedir, "/data/", name, "/temp.jpg")
-    EBImage::writeImage(image, image_file)
-    
     label_file <-
       system.file("extdata", "dummy_label.txt", package = "caffeR")
     function_file <-
@@ -46,7 +35,7 @@ predictValue <-
       deploy_file ,
       model_file ,
       label_file ,
-      image_file
+      image
     ))
     system(paste0("sudo rm -r -f ", image_file))
     result <-
