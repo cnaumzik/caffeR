@@ -3,7 +3,8 @@ predictValue <-
   function(caffedir = "~/caffe",
            name = "My_Model",
            image = NULL,
-           Net_name = NULL) {
+           Net_name = NULL, 
+           get_results = FALSE) {
     if(is.null(image) || !file.exists(image)) {
       stop("No image supplied")
     }
@@ -37,12 +38,12 @@ predictValue <-
       label_file ,
       image
     ))
-    system(paste0("sudo rm -r -f ", image_file))
+    if(get_results){
     result <-
       readResults(paste0(caffedir, "/models/", name, "/results.txt"), mode =
                     "last")
     print(paste0("The predicted value for ", result[1], " is:", result[2]))
-    
+    }
     
   }
 
