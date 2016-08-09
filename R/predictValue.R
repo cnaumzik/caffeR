@@ -15,7 +15,7 @@ predictValue <-
       )
     }
     model_file <-
-      paste0(caffedir, "/models/", name, "/", Net_name, "caffemodel")
+      paste0(caffedir, "/models/", name, "/", Net_name, ".caffemodel")
     if (!file.exists(model_file)) {
       stop(
         paste0(
@@ -25,17 +25,18 @@ predictValue <-
         )
       )
     }
-    label_file <-
-      system.file("extdata", "dummy_label.txt", package = "caffeR")
-    function_file <-
-      system.file("extdata", "regress.bin", package = "caffeR")
+    #label_file <-
+     # system.file("extdata", "dummy_label.txt", package = "caffeR")
+    #function_file <-
+      #system.file("extdata", "regress.bin", package = "caffeR")
+    label_file <- "~/caffeR/inst/extdata/dummy_label.txt"
+    function_file <- "~/caffe/models/Craigslist/regress.bin"
     
     system(paste0(
-      "./",
-      function_file,
-      deploy_file ,
-      model_file ,
-      label_file ,
+      function_file, " ",
+      deploy_file , " ",
+      model_file , " ",
+      label_file , " ",
       image
     ))
     if(get_results){

@@ -45,8 +45,8 @@ preprocessImagesHdf5 <- function(input_path = NULL, padding = FALSE,
       image_output <- padImage(image_read, which.max(dim(image_read)[1:2]) , resize_width , resize_height , image_mean )
     } else {
       image_output <- image_read %>% #WxHxC
-        EBImage::resize (w = resize_width , h = resize_height) - image_mean %>%
-        EBImage::equalize(range = c(0, 1), levels = 256)
+        EBImage::resize (w = resize_width , h = resize_height) - image_mean #%>%
+        #EBImage::equalize(range = c(0, 1), levels = 256)
     }
   image_mat <- array(image_output,dim = c(resize_width, resize_height, 3)) #WxHxC
   image_mat <- image_mat[,,c(3,2,1)]#Changing from RGB to BGR due to underlying opencv implementation
